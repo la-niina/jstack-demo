@@ -1,6 +1,7 @@
 import { Scalar } from "@scalar/hono-api-reference";
 import { describeRoute, openAPISpecs } from "hono-openapi";
 import { j } from "./jstack";
+import { postRouter } from "./routers/post-router";
 
 /**
  * This is your base API.
@@ -14,7 +15,6 @@ const app = j
   .use(j.defaults.cors)
   .onError(j.defaults.errorHandler);
 
-import { postRouter } from "./routers/post-router";
 
 /**
  * This is the main router for your server.
@@ -25,10 +25,11 @@ const appRouter = j.mergeRouters(app, {
 });
 export type AppRouter = typeof appRouter;
 
-app
+// Add routes to the main app router, not the base app
+appRouter
   .get(
     "/docs/json",
-    openAPISpecs(app, {
+    openAPISpecs(appRouter, {
       documentation: {
         info: {
           title: "Hono API",
@@ -45,24 +46,20 @@ app
     "/docs",
     Scalar((c) => {
       return {
-        url: "/doc",
+        url: "/api/docs/json", // Fixed: Full path to the JSON endpoint
       };
     }),
   )
-  // Negative Case: Using `.use()` does not work.
-  .use(
-    describeRoute({
-      description:
-        "This description will not be visible because it's not inside .get()",
-    }),
-  )
-  // Positive Case: Passing describeRoute() inside .get() works.
   .get(
     "/status",
     describeRoute({
       description: "Checks if the API is up.",
     }),
-    async (c) => {},
+    async (c) => {
+      // Added actual response
+      return c.json({ status: "ok", timestamp: new Date().toISOString() });
+    },
   );
 
-export default app;
+// Export the merged router, not the base app
+export default appRouter;

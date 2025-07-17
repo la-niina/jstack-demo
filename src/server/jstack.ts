@@ -5,7 +5,6 @@ interface Env {
 }
 
 export const j = jstack.init<Env>();
-
 /**
  * Public (unauthenticated) procedures
  *
