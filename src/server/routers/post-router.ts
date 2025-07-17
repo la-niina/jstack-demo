@@ -20,16 +20,14 @@ export const postRouter = j.router({
     .use(
       j.fromHono(
         describeRoute({
-          description: "itlog betlog2",
+          description: "This returns the most recent post.",
         }),
       ),
     )
     .use(async ({ ctx, next }) => {
-      console.log("ilogsd");
       await next();
     })
     .query(async ({ c }) => {
-      console.log("wee woo!!");
       return c.superjson(posts.at(-1) ?? null);
     }),
 
