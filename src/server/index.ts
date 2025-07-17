@@ -49,15 +49,18 @@ app
       };
     }),
   )
+  // Negative Case: Using `.use()` does not work.
   .use(
     describeRoute({
-      description: "itlog betlog",
+      description:
+        "This description will not be visible because it's not inside .get()",
     }),
   )
+  // Positive Case: Passing describeRoute() inside .get() works.
   .get(
     "/status",
     describeRoute({
-      description: "itlog katlog",
+      description: "Checks if the API is up.",
     }),
     async (c) => {},
   );
